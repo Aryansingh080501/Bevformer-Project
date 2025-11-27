@@ -268,3 +268,4 @@ log_config = dict(
     ])
 
 checkpoint_config = dict(interval=1)
+load_from = 'ckpts/bevformer_tiny_epoch_24.pth'
