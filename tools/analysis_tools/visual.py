@@ -8,6 +8,8 @@ from nuscenes.nuscenes import NuScenes
 from PIL import Image
 from nuscenes.utils.geometry_utils import view_points, box_in_image, BoxVisibility, transform_matrix
 from typing import Tuple, List, Iterable
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
@@ -25,7 +27,7 @@ from nuscenes.eval.common.data_classes import EvalBoxes, EvalBox
 from nuscenes.eval.detection.data_classes import DetectionBox
 from nuscenes.eval.detection.utils import category_to_detection_name
 from nuscenes.eval.detection.render import visualize_sample
-
+import os
 
 
 
@@ -471,7 +473,18 @@ def render_sample_data(
 if __name__ == '__main__':
     nusc = NuScenes(version='v1.0-mini', dataroot='./data/nuscenes', verbose=True)
     # render_annotation('7603b030b42a4b1caa8c443ccc1a7d52')
-    bevformer_results = mmcv.load('work_dirs/bevformer_tiny_nusc_json/pts_bbox_nuscenes.json')
+    bevformer_results = mmcv.load('test/bevformer_tiny/Thu_Nov_27_14_22_50_2025/pts_bbox/results_nusc.json')
     sample_token_list = list(bevformer_results['results'].keys())
-    for id in range(0, 10):
-        render_sample_data(sample_token_list[id], pred_data=bevformer_results, out_path=sample_token_list[id])
+    save_dir = os.path.expanduser('~/BEVFormer/vis_output')
+    os.makedirs(save_dir, exist_ok=True)
+    
+    for i, token in enumerate(sample_token_list[:10]):
+        out_path = os.path.join(save_dir, f'{i:03d}_{token}')
+        print(f'Saving {out_path}')
+        render_sample_data(
+            token,
+            pred_data=bevformer_results,
+            out_path=out_path
+        )
+
+    print(f'All images saved in: {save_dir}')
